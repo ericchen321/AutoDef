@@ -14,18 +14,28 @@ sudo updatedb
 wget -O deps/bazel.sh https://github.com/bazelbuild/bazel/releases/download/0.10.0/bazel-0.10.0-installer-linux-x86_64.sh
 sudo bash deps/bazel.sh
 
+# Cuda toolkit 10.0
+# follow instructions from https://developer.nvidia.com/cuda-10.0-download-archive
+# NOTE: leads to build errors for tensorflow
+
+# cuDNN
+# follow instructions from https://docs.nvidia.com/deeplearning/cudnn/install-guide/index.html#installcuda;
+# download cuDNN 7.6.5 for cuda 10.0
+# NOTE: leads to build errors for tensorflow
+
 # build and install my version of tensorflow
 # remove the author's tensorflow_cc
 rm -rf extern/tensorflow_cc/
 # clone Eric's tensorflow_cc
 cd extern/
 git clone https://github.com/ericchen321/tensorflow_cc.git
-cd ..
-cd extern/tensorflow_cc/tensorflow_cc
+cd tensorflow_cc/tensorflow_cc
 mkdir build
 cd build
-cmake -DTENSORFLOW_STATIC=OFF -DTENSORFLOW_SHARED=ON ..
-make -j8 && sudo make install
+# build without CUDA for now to avoid issues
+cmake -DTENSORFLOW_STATIC=OFF -DTENSORFLOW_SHARED=ON -DALLOW_CUDA=OFF ..
+make -j8 -k 2>&1 | tee build.log
+sudo make install
 cd tensorflow
 ./bazel-bin/tensorflow/tools/pip_package/build_pip_package ./pip_package_build
 cd ../../../../../ # back to AutoDef/
@@ -47,9 +57,8 @@ rm -rf extern/GAUSS/
 # clone Eric's GAUSS recursively
 cd extern/
 git clone --recursive https://github.com/ericchen321/GAUSS.git
-cd ..
 # Build GAUSS
-cd extern/GAUSS
+cd GAUSS/
 bash InstallGAUSS_Ubuntu_noqt.sh
 cd ../../
 
