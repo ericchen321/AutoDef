@@ -55,13 +55,18 @@ cd ../../
 
 # Build Libigl Python bindings
 rm -rf extern/libigl/
-git clone --recursive git@github.com:lawsonfulton/libigl-legacy.git extern/libigl
+git clone -b AutoDef --recursive git@github.com:lawsonfulton/libigl-legacy.git extern/libigl
 cd extern/libigl/python
 mkdir build
 cd build
 cmake ..
 make -j8
 cd ../../../../
+
+# Build nlohmann's json
+rm -rf extern/json/
+git clone --recursive git@github.com:nlohmann/json.git extern/json/
+git reset --hard 9294e25
 
 # Build Cubacode
 cd src/cubacode
