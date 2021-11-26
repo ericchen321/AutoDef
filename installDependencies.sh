@@ -16,12 +16,10 @@ sudo bash deps/bazel.sh
 
 # Cuda toolkit 10.0
 # follow instructions from https://developer.nvidia.com/cuda-10.0-download-archive
-# NOTE: leads to build errors for tensorflow
 
 # cuDNN
 # follow instructions from https://docs.nvidia.com/deeplearning/cudnn/install-guide/index.html#installcuda;
 # download cuDNN 7.6.5 for cuda 10.0
-# NOTE: leads to build errors for tensorflow
 
 # build and install my version of tensorflow
 # remove the author's tensorflow_cc
@@ -32,8 +30,8 @@ git clone https://github.com/ericchen321/tensorflow_cc.git
 cd tensorflow_cc/tensorflow_cc
 mkdir build
 cd build
-# build without CUDA for now to avoid issues
-cmake -DTENSORFLOW_STATIC=OFF -DTENSORFLOW_SHARED=ON -DALLOW_CUDA=OFF ..
+# build and install with CUDA
+cmake -DTENSORFLOW_STATIC=OFF -DTENSORFLOW_SHARED=ON -DALLOW_CUDA=ON ..
 make -j8 -k 2>&1 | tee build.log
 sudo make install
 cd tensorflow
@@ -75,7 +73,14 @@ cd ../../../../
 # Build nlohmann's json
 rm -rf extern/json/
 git clone --recursive git@github.com:nlohmann/json.git extern/json/
+cd extern/json/
 git reset --hard 9294e25
+# build tests (probably not necessary?)
+mkdir build
+cd build
+cmake ..
+cmake --build .
+cd ../../../
 
 # Build Cubacode
 cd src/cubacode
